@@ -28,9 +28,9 @@ const ESSAY = {
       page: 'section2.html', dark: true, type: 'statements',
     tunnel: '#000',
       choices: [
-        { text: 'I want to become unknown even to myself.',  to: 'a' },
+        { text: 'Where am I do the boundaries lie.',  to: 'a' },
         { text: 'I love to march, engaged in that collective spirit.',            to: 'b' },
-        { text: 'Talking is too intimate, we should be silent.',                         to: 'c' },
+        { text: 'Where the cracks go, what comes out is our amniota.',                         to: 'c' },
         { text: 'A mole digs a hole, deepdeeper, until he finds stars.',               to: 'd' }
       ]
     },
