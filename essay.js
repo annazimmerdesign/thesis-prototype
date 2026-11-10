@@ -61,7 +61,7 @@ const ESSAY = {
       page: 'nexus.html', dark: true, type: 'nexus',
       tunnel: '#000',
       // PLACEHOLDER: replace with your own explanation of the initial paragraph and the mechanisms
-      text: 'Placeholder. The opening paragraph, said again as its mechanisms: where a text sits, what it is made of, who it lets in, when it happens, how it is carried over, and who is left to read it. Each of these is a fold in the same egg. Choose one and wade in.',
+      text: 'There are many mechanisms of the Supernarrative—spatiality, linguistics, facility, temporal processing, encoding, subjectivity, framing. Entities such as culture or milieu are both part and parcel of the supernarrative structure.',
       nodes: [
         { text: 'spatiality',       to: 'spatiality',    tunnel: '#3A86FF' },
         { text: 'linguistics',      to: 'linguistics',   tunnel: '#8338EC' },
