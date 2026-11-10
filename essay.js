@@ -73,17 +73,23 @@ const ESSAY = {
     },
 
     // PLACEHOLDER mechanism sections; each returns to the nexus. Replace the text and give each its own page if you like.
-    spatiality:   { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', text: 'Placeholder for spatiality.' },
-    linguistics:  { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', text: 'Placeholder for linguistics.' },
-    faciality:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', text: 'Placeholder for faciality.' },
-    temporal:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', text: 'Placeholder for temporal processing.' },
-    encoding:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', text: 'Placeholder for encoding.' },
-    subjectivity: { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', text: 'Placeholder for subjectivity.' },
+    spatiality:   { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'How we organize ourselves, our language, our story. This is how we interface with the world. Connects to temporal processing in that together, as space-time, it is the main phenomenom our brains must negotiate. We might think of The Text as organized on spatial axis rather than purely linguistic or phonetic.' },
+    linguistics:  { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'How we currently view language as a technological advancement. Communicative and social in nature. It is a project of the Collective, not the individual. No man an island, story in an empty sea.' },
+    faciality:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'The black dot aginst the white wall (according to Deleuze and Guattai). Signifier and signified, symbol and sign. A tyranny that dictates our mode of interfacing. What lies beyond the face, the black on white symbol? This simplfies the story for us for relay.' },
+    temporal:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'Cognitively, how do we handle time? For the most part, linearly. But the narrative as a device allows us to account for loops, returns, folds, dimensionality against the line. The supernarrative comes out of our collective aims to organize time socially, not all at once, but in arcs.' },
+    encoding:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'What means what, how means how. Encryption, double meanings and double binds. We invest energy into certain things so they mean more than they are. The narrative is given weight and meaning-making is done.' },
+    subjectivity: { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'Object or subject? How do we recognize the individual, the self, agaisnt the colelctive, the eveyrthing? The supernarrative distinguishes us, seemingly, from bridge or tree, bird or granite. The difference between prop and character, subjective experience intersects, inserts, into itself.' },
 
     next: {
         page: 'section4.html', dark: false, type: 'passage', next: 'nexus',
         tunnel: '#0645d6',
-        text: 'I will be more lucid this time: Let us take the Canon, the Story, the Narratve superstrcture, and propose: a communally authored, essentially eerie, agentic and generative geometry simultaneously recording and acting upon humanity with real material consequences, even "outside of the text," i.e. our anthropocentric perception.'
+        text: 'Let us take the Canon, the Story, the Narratve superstrcture, and propose: a communally authored, essentially eerie, agentic and generative geometry simultaneously recording and acting upon humanity with real material consequences, even "outside of the text," i.e. our anthropocentric perception.'
     }
   }
 };
