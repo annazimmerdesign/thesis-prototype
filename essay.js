@@ -21,7 +21,7 @@ const ESSAY = {
     intro: {
       page: 'index.html', dark: false, type: 'passage', next: 'statements',
       tunnel: '#0645d6',
-      text: 'To begin, I am not attempting to speak in metaphor. From here on out, take everything I say literally, even when I myself seem to imply otherwise. This is, for all intents and purposes, an exercise on world building—one that we will soon see is topographically vicious. We will be dealing with text, The Text, as a material (and technological) entity on par with and even superior to, that of the wheel or the motor. The Text is an egg as an egg is a [[door|statements]], no inside or outside but an inside-outside-outside-inside. Wade through the amniotic waters of our narrative headlock withme.'
+      text: 'To begin, I am not attempting to speak in metaphor. From here on out, take everything I say literally, even when I myself seem to imply otherwise. This is, for all intents and purposes, an exercise on world building—one that we will soon see is topographically vicious, sticky, plastic, cardinal. We will be dealing with text, The Text, as a material (and technological) entity on par with and even superior to, that of the wheel or the motor. The Text is an egg as an egg is a [[door|statements]], no inside or outside but an inside-outside-outside-inside.'
     },
 
     statements: {
