@@ -1,3 +1,4 @@
+/* Put your font files in the font/ folder. */
 @font-face {
   font-family: 'DT';
   src: url('font/dtworldtour.woff') format('woff');
@@ -37,7 +38,6 @@ html, body {
   opacity: 0; transition: opacity 1.4s; pointer-events: none;
 }
 
-/* ---------- section pages (section.js) ---------- */
 #page {
   position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: min(820px, 86vw); font-size: clamp(20px, 2.4vw, 34px); line-height: 1.45;
@@ -61,7 +61,7 @@ html, body {
 .choices.decided button { pointer-events: none; }
 .choices.decided button:not(.chosen) { opacity: .12; transition: opacity .6s; }
 .choices.decided button.chosen { opacity: 1; background: var(--fg); color: var(--bg); }
-/* ---------- the nexus ---------- */
+
 #mass { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 body.nexus #page { left: 6vw; top: 50%; transform: translateY(-50%); width: min(460px, 38vw); font-size: clamp(16px, 1.55vw, 23px); z-index: 2; }
 .node {
@@ -71,4 +71,7 @@ body.nexus #page { left: 6vw; top: 50%; transform: translateY(-50%); width: min(
 }
 .node.on { opacity: 1; }
 .node.chosen { text-shadow: none; }
+.node.seen { opacity: 0.45 !important; }
+.node.exit { font-size: 0.8em; letter-spacing: 0.04em; pointer-events: none; }
+.node.exit.on { pointer-events: auto; opacity: 1; }
 @media (max-width: 899px) { body.nexus #page { top: 8vh; transform: none; width: 84vw; } }

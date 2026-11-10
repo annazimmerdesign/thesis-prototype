@@ -1,37 +1,46 @@
-
+// egg3d.js  (three.js)
+// A small black egg, turning in space. Each tap adds hairline cracks and folds the crown of the shell back on a ragged
+// hinge, so the shell opens like a flower and shows its inside (white, drawn with a black contour) on the outside.
+// When it is open, a click takes hold of a word at the lip. Move the mouse and the words come out as one thread: a
+// viscous, sticky chain dragged behind the cursor. When the last word is out, the thread lets go and the words slide into
+// the passage. The link word is the way on, through the dot tunnel.
 
 (() => {
 'use strict';
 
-// ---------- knobs ----------
-const EGG_SIZE     = 0.16;            // egg height as a share of the window height (the 2D version used 0.105)
-const EGG_Y        = 0.36;            // where the egg rests: its centre, as a share of the window height from the top
-const CRACK_TAPS   = 6;               // taps it takes to open the shell
-const TILT         = 0.6;             // radians the egg leans towards you, so you can see into it
-const BLOOM_MAX    = Math.PI * 0.80;  // how far the crown folds back (pi = all the way down the outside); it may pass through the shell
-const OPEN2_MAX    = Math.PI * 0.30;  // how far the second, lower tier of the shell opens
-const STRETCH      = 0.5;             // how much the opened shell grows, as a share of its size
-const LIP2_S       = 0.62;            // where the lower tier breaks
-const LIP_S        = 0.30;            // where the shell breaks: 0 = the top of the egg, 1 = the bottom
-const LIP_JAG      = 0.045;           // how ragged the break is
+const EGG_SIZE     = 0.16;
+const EGG_Y        = 0.36;
+const CRACK_TAPS0  = 6;
+const CRACK_TAPS   = (() => { try { return +sessionStorage.getItem('essay.loop') ? 4 : CRACK_TAPS0; } catch (_) { return CRACK_TAPS0; } })();
+const TILT         = 0.6;
+const BLOOM_MAX    = Math.PI * 0.80;
+const OPEN2_MAX    = Math.PI * 0.30;
+const STRETCH      = 0.5;
+const LIP2_S       = 0.62;
+const LIP_S        = 0.30;
+const LIP_JAG      = 0.045;
 
-const HEAD_PULL    = 0.14;            // how tightly the first word follows the cursor (lower = stickier, lazier)
-const NODE_FOLLOW  = 0.30;            // how tightly each word follows the thread's path (lower = more liquid)
-const SPACING      = 1.0;             // word spacing along the thread (higher = looser)
-const START_SCALE  = 0.22;            // size of a word at the lip, relative to its final size
-const GROW_DIST    = 260;             // px from the lip over which a word grows to full size
-const SETTLE_MS    = 2200;            // how long one word takes to sink into its place (ms)
-const SETTLE_STAGGER = 32;            // ms between one word letting go and the next, so the string comes undone from the egg outward
-const SETTLE_SAG   = 22;              // px a word droops below its path while it sinks (0 for none)
+const HEAD_PULL    = 0.14;
+const NODE_FOLLOW  = 0.30;
+const SPACING      = 1.0;
+const START_SCALE  = 0.22;
+const GROW_DIST    = 260;
+const SETTLE_MS    = 2200;
+const SETTLE_STAGGER = 32;
+const SETTLE_SAG   = 22;
 
-const DODGE_RADIUS = 80;              // px: settled words slide away from a moving cursor inside this distance
+const DODGE_RADIUS = 80;
 const DODGE_FORCE  = 1.4;
-const FONT_MAX     = 32;              // px; the text shrinks to fit, down to FONT_MIN
+const FONT_MAX     = 32;
 const FONT_MIN     = 14;
 const FONT_FAMILY  = "'DT', sans-serif";
 
-
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let LOOP = 0; try { LOOP = +sessionStorage.getItem('essay.loop') || 0; } catch (_) {}
+if (/[?&]loop=\d/.test(location.search)) LOOP = +location.search.match(/[?&]loop=(\d+)/)[1];
+const INV = LOOP % 2;
+if (INV) document.body.classList.add('dark');
 const cv = document.getElementById('stage'), wordsEl = document.getElementById('words');
 const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
 const smooth = t => t * t * (3 - 2 * t);
@@ -83,7 +92,7 @@ const material = new THREE.ShaderMaterial({
     uBloom: { value: 0 }, uOpen2: { value: 0 }, uStretch: { value: 0 }, uWob: { value: 0 }, uTime: { value: 0 },
     uLip: { value: LIP_S }, uLip2: { value: LIP2_S }, uJag: { value: LIP_JAG },
     uPh: { value: new THREE.Vector4(PH[0], PH[1], PH[2], PH[3]) }, uPh4: { value: PH[4] },
-    uCrack: { value: crackTex }, uHue: { value: 0 }
+    uCrack: { value: crackTex }, uHue: { value: 0 }, uInv: { value: INV }
   },
   vertexShader: `
     attribute float aS; attribute float aT;
@@ -97,8 +106,7 @@ const material = new THREE.ShaderMaterial({
            + 0.12 * sin(29.0 * th + uPh.w) + 0.07 * sin(53.0 * th + uPh4);
     }
     float jag2(float th) { return 0.5 * sin(4.0 * th + uPh.z) + 0.3 * sin(9.0 * th + uPh.w) + 0.2 * sin(19.0 * th + uPh.x); }
-    // the shell at (s, th). Two tiers, each hinged on its own ragged break and folded back and out: the crown first,
-    // then everything above the second break. The opened shell grows, curls, and slowly writhes; it may pass through itself.
+
     vec3 surf(float s, float th) {
       float lip1 = uLip + uJag * jag(th), lip2 = uLip2 + uJag * 1.3 * jag2(th);
       vec2 p = prof(s), pl1 = prof(lip1), pl2 = prof(lip2);
@@ -123,22 +131,21 @@ const material = new THREE.ShaderMaterial({
       n = L > 1e-7 ? n / L : vec3(0.0, aS < 0.5 ? 1.0 : -1.0, 0.0);
       vec4 mv = modelViewMatrix * vec4(w, 1.0);
       vView = mv.xyz; vN = normalMatrix * n; vUv = vec2(aT / (2.0 * PI), aS); vS = aS;
-      vAO = aS < lip2 ? 0.0 : clamp((pl2.y - w.y) / 1.3, 0.0, 1.0);   // deeper inside the cup = darker
+      vAO = aS < lip2 ? 0.0 : clamp((pl2.y - w.y) / 1.3, 0.0, 1.0);
       gl_Position = projectionMatrix * mv;
     }`,
   fragmentShader: `
-    uniform sampler2D uCrack; uniform float uHue, uTime;
+    uniform sampler2D uCrack; uniform float uHue, uTime, uInv;
     varying vec3 vView; varying vec3 vN; varying vec2 vUv; varying float vAO; varying float vS;
     void main() {
       float ndv = abs(dot(normalize(vN), normalize(-vView)));
       vec3 col;
-      if (gl_FrontFacing) {                              // the outside: black, with white hairline cracks
-        col = mix(vec3(0.0), vec3(1.0), texture2D(uCrack, vUv).r);
-      } else {                                           // the inside, now facing out: white, drawn with a contour
+      if (gl_FrontFacing) {
+        col = mix(vec3(uInv), vec3(1.0 - uInv), texture2D(uCrack, vUv).r);
+      } else {
         float rim = pow(1.0 - ndv, 2.6);
         col = mix(vec3(0.97), vec3(0.12), vAO * 0.8);
-        // colour arrives with the unfolding: the hyperbolic, crocheted forms of the moodboard. Lavender, plum and
-        // crimson-magenta, laid down in stitch rows, with a thin blue / orange sheen at the grazing edges.
+
         if (uHue > 0.0) {
           float u = vUv.x * 6.2832;
           float g = 0.5 + 0.28 * sin(u * 2.0 + vS * 5.0 + uTime * 0.3) + 0.22 * sin(u * 3.0 - vS * 8.0) + 0.45 * vAO;
@@ -148,13 +155,13 @@ const material = new THREE.ShaderMaterial({
           c = mix(c, pink, smoothstep(1.0, 2.0, h));
           c = mix(c, orange, smoothstep(2.0, 3.0, h));
           c = mix(c, amber, smoothstep(3.0, 4.0, h));
-          c = mix(c, azure, 0.25 * pow(1.0 - ndv, 2.0));                    // azure pools toward the edges
+          c = mix(c, azure, 0.25 * pow(1.0 - ndv, 2.0));
           c *= 1.0 - 0.35 * vAO;
           col = mix(col, c, uHue);
           rim *= 1.0 - 0.35 * uHue;
         }
         col = mix(col, mix(vec3(0.0), vec3(0.12, 0.03, 0.10), uHue), clamp(rim * 1.3, 0.0, 1.0));
-        col = mix(col, vec3(0.0), smoothstep(0.022, 0.008, vS));   // the torn edge of the folded crown
+        col = mix(col, vec3(0.0), smoothstep(0.022, 0.008, vS));
       }
       gl_FragColor = vec4(col, 1.0);
     }`
@@ -164,7 +171,7 @@ group.add(mesh);
 const raycaster = new THREE.Raycaster();
 
 const st = {
-  phase: 'egg',                     // egg -> opening -> open -> settling -> done
+  phase: 'egg',
   taps: 0, B: 0, Bv: 0, Bt: 0, wobX: 0, wobXv: 0, wobZ: 0, wobZv: 0, spin: 0.25, mx: 0.5,
   cracks: [], dirty: false, lw: 8,
   W: 0, H: 0, eggPx: 0, S: { x: 0, y: 0 },
@@ -177,7 +184,7 @@ function build() {
   st.W = W; st.H = H; st.eggPx = H * EGG_SIZE;
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(W, H, false);
   camera.aspect = W / H;
-  const d = 1 / (EGG_SIZE * FOV_TAN), visH = 2 * d * FOV_TAN;       // the egg is 2 units tall
+  const d = 1 / (EGG_SIZE * FOV_TAN), visH = 2 * d * FOV_TAN;
   st.camD = d; camera.position.set(0, 0, d); camera.near = d * 0.2; camera.far = d * 3; camera.updateProjectionMatrix();
   group.position.y = (0.5 - EGG_Y) * visH;
   st.lw = clamp(0.95 * TH / st.eggPx, 2.5, 30);
@@ -204,7 +211,7 @@ function addCracks(u, v, tapNo) {
   }
   st.dirty = true;
 }
-function addLipCrack(u, second) {               
+function addLipCrack(u, second) {
   for (const dir of [1, -1]) {
     const pts = [];
     for (let a = 0; a <= Math.PI + 0.001; a += 0.02) {
@@ -232,7 +239,7 @@ function paintCracks(now) {
   crackTex.needsUpdate = true; st.dirty = growing;
 }
 
-function pick(x, y) {                          
+function pick(x, y) {
   group.updateMatrixWorld(true);
   raycaster.setFromCamera({ x: x / st.W * 2 - 1, y: -(y / st.H) * 2 + 1 }, camera);
   const hit = raycaster.intersectObject(mesh)[0]; if (!hit) return null;
@@ -255,7 +262,7 @@ function tap(x, y) {
 const mg = document.createElement('canvas').getContext('2d');
 function parseTokens() {
   const sec = ESSAY.sections.intro;
-  return sec.text.trim().split(/\s+/).map(tok => {
+  return (LOOP && sec.textAgain ? sec.textAgain : sec.text).trim().split(/\s+/).map(tok => {
     const m = tok.match(/^\[\[(.+?)(?:\|(.+?))?\]\](.*)$/);
     return m ? { text: m[1] + m[3], link: true, href: ESSAY.pageOf(m[2] || sec.next) } : { text: tok, link: false };
   });
@@ -292,7 +299,7 @@ function spawn(now) {
                   mode: 'rope', delay: 0, ox: 0, oy: 0, ovx: 0, ovy: 0, live: false });
   st.k++;
 }
-function pointAt(a) {                           
+function pointAt(a) {
   const T = st.trail; if (a <= 0 || T.length < 2) return T[0];
   let lo = 0, hi = T.length - 1;
   while (hi - lo > 1) { const m = (lo + hi) >> 1; if (T[m].len < a) lo = m; else hi = m; }
@@ -305,7 +312,7 @@ function updateThread(dt, now) {
   if (st.phase === 'open') {
     if (st.k === 0) { spawn(now); st.trail = [{ x: S.x, y: S.y, len: 0 }]; st.head = { x: S.x, y: S.y }; }
     st.trail[0].x = S.x; st.trail[0].y = S.y;
-    if (st.attached) {                                           // the head trails the cursor; where it goes is the thread
+    if (st.attached) {
       const f = Math.min(1, HEAD_PULL * dt), h = st.head;
       h.x += (st.px - h.x) * f; h.y += (st.py - h.y) * f;
       const l = st.trail[st.trail.length - 1], d = Math.hypot(h.x - l.x, h.y - l.y);
@@ -313,22 +320,21 @@ function updateThread(dt, now) {
     }
     const T = st.trail[st.trail.length - 1].len;
 
-    // how far back along the thread each word sits (closer to the lip the words are small, so they sit closer)
     let o = 0;
     for (let i = 0; i < N.length; i++) {
       const q = N[i]; q.o = o; q.sc = scaleAt(T - o);
       const nw = st.slots[i + 1] ? st.slots[i + 1].w : q.w;
       o += (0.5 * (q.w + nw) + gap()) * q.sc * SPACING;
     }
-    while (st.k < n && o < T) {                                   // the thread has grown to reach the next word: it leaves the egg
+    while (st.k < n && o < T) {
       spawn(now); const q = N[N.length - 1]; q.o = o; q.sc = scaleAt(T - o);
       const nw = st.slots[q.i + 1] ? st.slots[q.i + 1].w : q.w; o += (0.5 * (q.w + nw) + gap()) * q.sc * SPACING;
     }
-    for (const q of N) {                                          // words follow the path, a little behind it
+    for (const q of N) {
       const tgt = pointAt(T - q.o), f = Math.min(1, NODE_FOLLOW * dt);
       q.x += (tgt.x - q.x) * f; q.y += (tgt.y - q.y) * f;
     }
-    if (st.k === n && T - N[N.length - 1].o > 6) {               // the last word is out: let go and settle into the passage
+    if (st.k === n && T - N[N.length - 1].o > 6) {
       st.phase = 'settling'; st.relAt = now; st.attached = false; document.body.style.cursor = '';
       N.forEach(q => { q.delay = q.i * SETTLE_STAGGER; });
     }
@@ -342,7 +348,7 @@ function updateThread(dt, now) {
       const pr = N[idx - 1], nx = N[idx + 1];
       let ax, ay;
       if (pr && nx) { ax = pr.x - nx.x; ay = pr.y - nx.y; } else if (pr) { ax = pr.x - q.x; ay = pr.y - q.y; } else if (nx) { ax = q.x - nx.x; ay = q.y - nx.y; } else { ax = 1; ay = 0; }
-      let ang = Math.atan2(ay, ax); if (ang > Math.PI / 2) ang -= Math.PI; else if (ang < -Math.PI / 2) ang += Math.PI;   // always reads left to right
+      let ang = Math.atan2(ay, ax); if (ang > Math.PI / 2) ang -= Math.PI; else if (ang < -Math.PI / 2) ang += Math.PI;
       q.ang += (clamp(ang, -1.25, 1.25) - q.ang) * Math.min(1, 0.2 * dt);
       if (st.phase === 'settling' && now - st.relAt >= q.delay) {
         q.mode = 'glide'; q.g = { t0: now, dur: SETTLE_MS * (0.85 + 0.3 * Math.random()), x: q.x, y: q.y, sc: q.sc, ang: q.ang,
@@ -350,6 +356,7 @@ function updateThread(dt, now) {
       }
     }
     if (q.mode === 'glide') {
+
       const G = q.g, p = clamp((now - G.t0) / G.dur, 0, 1), ex = smooth(Math.pow(p, 0.85)), ey = smooth(Math.pow(p, 1.35)), e = smooth(p);
       const calm = 1 - p;
       q.x = G.x + (tx - G.x) * ex + Math.sin(p * 6.28 + G.ph) * 6 * calm * Math.sin(p * 3.14);
@@ -359,7 +366,7 @@ function updateThread(dt, now) {
       if (p >= 1) { q.mode = 'set'; q.sc = 1; q.ang = 0; }
     }
     if (q.mode === 'set') {
-      if (!q.link && pvn > 0) {                                  // slippery: a moving cursor makes a settled word slide off
+      if (!q.link && pvn > 0) {
         const dx = tx + q.ox - st.px, dy = ty + q.oy - st.py, d = Math.hypot(dx, dy);
         if (d < DODGE_RADIUS && d > 0.1) { const f = (1 - d / DODGE_RADIUS) * DODGE_FORCE * pvn; q.ovx += dx / d * f; q.ovy += dy / d * f; }
       }
@@ -385,7 +392,7 @@ addEventListener('pointerdown', e => {
 addEventListener('pointermove', e => {
   st.pvx = e.clientX - st.px; st.pvy = e.clientY - st.py; st.px = e.clientX; st.py = e.clientY; st.mx = e.clientX / st.W;
 });
-const letGo = e => { if (st.attached && st.phase === 'open' && e.pointerType !== 'mouse') st.attached = false; };   // a mouse stays stuck; a finger lets go
+const letGo = e => { if (st.attached && st.phase === 'open' && e.pointerType !== 'mouse') st.attached = false; };
 addEventListener('pointerup', letGo); addEventListener('pointercancel', letGo);
 addEventListener('keydown', e => {
   if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -394,13 +401,14 @@ addEventListener('keydown', e => {
   if (st.phase === 'egg') tap(st.W / 2 + rnd(-0.2, 0.2) * st.eggPx, st.H * EGG_Y + rnd(-0.2, 0.2) * st.eggPx);
   else if (st.phase === 'open') st.attached = !st.attached;
 });
+
 const DOOR_MS = 2800, DOOR_N = 26, DOOR_DZ = 1.1;
 const doorVS = `
   uniform float uFold, uTime, uIdx, uHW; varying vec2 vUv;
   mat2 r(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
   void main() {
     vUv = uv; vec3 q = position / uHW;
-    for (int k = 0; k < 4; k++) {                  // space folded over itself, again and again
+    for (int k = 0; k < 4; k++) {
       float fk = float(k);
       vec3 c = vec3(0.30 + 0.10 * fk, 0.18, 0.45) * (1.0 + 0.4 * sin(uTime * 1.7 + fk * 2.0 + uIdx * 0.6));
       q = mix(q, abs(q) - c, uFold);
@@ -412,7 +420,6 @@ const doorVS = `
 const doorFS = `
   uniform sampler2D uMap; uniform vec3 uCol; uniform float uFog, uSwell; varying vec2 vUv;
   void main() {
-    // the letters swell: a blurred copy of the glyphs is cut at a falling threshold, so the strokes bloom into one another
     float a = texture2D(uMap, vUv, 4.5 * smoothstep(0.3, 1.0, uSwell)).a;
     if (a < 0.35 * pow(1.0 - uSwell, 2.5) + 0.02) discard;
     gl_FragColor = vec4(mix(uCol, vec3(1.0), uFog), 1.0);
@@ -448,7 +455,7 @@ function doorUpdate(now) {
   const swell = smooth(clamp((t - 0.3) / 0.6, 0, 1)), fold = (0.28 + 0.55 * swell) * smooth(clamp(t / 0.6, 0, 1)), tt = smooth(t), ctr = smooth(clamp(t / 0.6, 0, 1));
   const K = 3.0, travel = st.camD * 1.5 * (Math.exp(K * t) - 1) / (Math.exp(K) - 1);
   D.meshes.forEach((m, j) => {
-    const z = -j * DOOR_DZ * (0.4 + 0.6 * tt) + travel;           // the corridor opens out as it rushes at you
+    const z = -j * DOOR_DZ * (0.4 + 0.6 * tt) + travel;
     const sw = tt * (0.25 + 0.05 * j), a = j * 0.55 + t * 3.0;
     m.position.set(D.wx * (1 - ctr) + Math.cos(a) * sw, D.wy * (1 - ctr) + Math.sin(a) * sw, z);
     m.scale.setScalar(1 + 5 * tt + 16 * swell * swell);
@@ -460,7 +467,7 @@ function doorUpdate(now) {
   });
   camera.rotation.z = t * t * 0.5;
   wordsEl.style.opacity = String(1 - clamp(t / 0.25, 0, 1));
-  D.veil.style.opacity = String(smooth(clamp((t - 0.93) / 0.07, 0, 1)));   // only a safety net: the swollen shards should already fill the screen
+  D.veil.style.opacity = String(smooth(clamp((t - 0.93) / 0.07, 0, 1)));
   if (t >= 1 && D.fixedT == null) {
     D.done = true;
     location.href = D.el.getAttribute('href') + '#' + Math.round(D.x) + ',' + Math.round(D.y) + ',' + D.col.replace('#', '');
@@ -474,7 +481,6 @@ wordsEl.addEventListener('click', e => {
   doorStart(el, x, y);
 });
 
-
 let last = performance.now();
 function frame(now) {
   const dt = clamp((now - last) / 16.667, 0.2, 2.5); last = now;
@@ -487,10 +493,9 @@ function frame(now) {
   U.uOpen2.value = OPEN2_MAX * smooth(clamp((B - 0.45) / 0.55, 0, 1));
   U.uStretch.value = STRETCH * smooth(clamp(B, 0, 1));
   U.uWob.value = clamp(B, 0, 1); U.uTime.value = now / 1000;
-  U.uHue.value = smooth(clamp((B - 0.4) / 0.6, 0, 1));
+  U.uHue.value = Math.max(smooth(clamp((B - 0.4) / 0.6, 0, 1)), LOOP ? 0.3 : 0);
   if (st.phase === 'opening' && Math.abs(st.B - 1) < 0.015 && Math.abs(st.Bv) < 0.003) st.phase = 'open';
 
-  // wobble, a slow turn, and a little lean towards the cursor
   st.wobXv += (-0.12 * st.wobX - 0.06 * st.wobXv) * dt; st.wobX += st.wobXv * dt;
   st.wobZv += (-0.12 * st.wobZ - 0.06 * st.wobZv) * dt; st.wobZ += st.wobZv * dt;
   if (!REDUCED) mesh.rotation.y += st.spin * dt / 60;
@@ -500,7 +505,7 @@ function frame(now) {
 
   if (st.dirty) paintCracks(now);
   group.updateMatrixWorld(true);
-  const v = new THREE.Vector3(0, 0.5, 0); mesh.localToWorld(v); v.project(camera);   // the opening, in screen px
+  const v = new THREE.Vector3(0, 0.5, 0); mesh.localToWorld(v); v.project(camera);
   st.S.x = (v.x + 1) / 2 * st.W; st.S.y = (1 - v.y) / 2 * st.H;
   doorUpdate(now);
   renderer.render(scene, camera);
@@ -510,6 +515,10 @@ function frame(now) {
 }
 
 addEventListener('resize', build);
+
+(() => { const m = location.hash.match(/#(\d+),(\d+)(?:,([0-9a-fA-F]{3,8}))?/); if (!m || !window.Tunnel) return;
+  const ready = (document.fonts && document.fonts.load) ? document.fonts.load('32px DT').catch(() => {}) : Promise.resolve();
+  Tunnel.arrive(+m[1], +m[2], INV ? '#fff' : '#000', null, m[3] ? '#' + m[3] : null, ready); })();
 let started = false;
 const start = () => { if (started) return; started = true; build(); requestAnimationFrame(frame); };
 if (document.fonts && document.fonts.load) {
@@ -517,5 +526,5 @@ if (document.fonts && document.fonts.load) {
   setTimeout(start, 1500);
 } else start();
 
-window.__egg3d = { st, tap, material, doorStart, doorUpdate };            // for testing
+window.__egg3d = { st, tap, material, doorStart, doorUpdate };
 })();

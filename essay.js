@@ -60,15 +60,17 @@ const ESSAY = {
     nexus: {
       page: 'nexus.html', dark: true, type: 'nexus',
       tunnel: '#000',
+      exit: { text: 'again', to: 'intro', tunnel: '#000' },
       // PLACEHOLDER: replace with your own explanation of the initial paragraph and the mechanisms
-      text: 'There are many mechanisms of the Supernarrative—spatiality, linguistics, facility, temporal processing, encoding, subjectivity, framing. Entities such as culture or milieu are both part and parcel of the supernarrative structure.',
+      text: 'There are many mechanisms of the Supernarrative—spatiality, linguistics, faciality, temporal processing, encoding, subjectivity, and framing. Entities such as culture or milieu are both part and parcel of the supernarrative structure.',
       nodes: [
         { text: 'spatiality',       to: 'spatiality',    tunnel: '#3A86FF' },
         { text: 'linguistics',      to: 'linguistics',   tunnel: '#8338EC' },
         { text: 'faciality',         to: 'faciality',      tunnel: '#FF006E' },
         { text: 'temporal processing', to: 'temporal',   tunnel: '#FB5607' },
         { text: 'encoding',         to: 'encoding',      tunnel: '#FFBE0B' },
-        { text: 'subjectivity',     to: 'subjectivity',  tunnel: '#fff' }
+        { text: 'subjectivity',     to: 'subjectivity',  tunnel: '#fff' },
+        { text: 'framing',          to: 'framing',       tunnel: '#C77DFF' }
       ]
     },
 
@@ -78,13 +80,16 @@ const ESSAY = {
     linguistics:  { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'How we currently view language as a technological advancement. Communicative and social in nature. It is a project of the Collective, not the individual. No man an island, story in an empty sea.' },
     faciality:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
-      text: 'The black dot aginst the white wall (according to Deleuze and Guattai). Signifier and signified, symbol and sign. A tyranny that dictates our mode of interfacing. What lies beyond the face, the black on white symbol? This simplfies the story for us for relay.' },
+      text: 'The black dot aginst the white wall (according to Deleuze and Guattari). Signifier and signified, symbol and sign. A tyranny that dictates our mode of interfacing. What lies beyond the face, the black on white symbol? This simplfies the story for us for relay.' },
     temporal:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'Cognitively, how do we handle time? For the most part, linearly. But the narrative as a device allows us to account for loops, returns, folds, dimensionality against the line. The supernarrative comes out of our collective aims to organize time socially, not all at once, but in arcs.' },
     encoding:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'What means what, how means how. Encryption, double meanings and double binds. We invest energy into certain things so they mean more than they are. The narrative is given weight and meaning-making is done.' },
     subjectivity: { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'Object or subject? How do we recognize the individual, the self, agaisnt the colelctive, the eveyrthing? The supernarrative distinguishes us, seemingly, from bridge or tree, bird or granite. The difference between prop and character, subjective experience intersects, inserts, into itself.' },
+
+    framing:      { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
+      text: 'Placeholder for framing.' },
 
     next: {
         page: 'section4.html', dark: false, type: 'passage', next: 'nexus',
