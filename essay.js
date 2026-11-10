@@ -59,7 +59,7 @@ const ESSAY = {
     nexus: {
       page: 'nexus.html', dark: true, type: 'nexus',
       tunnel: '#000',
-      exit: { text: 'again', to: 'intro', tunnel: '#000' },
+      exit: { text: '.', to: 'intro', tunnel: '#000' },
       text: 'There are many mechanisms of the Supernarrative—spatiality, linguistics, faciality, temporal processing, encoding, subjectivity, and framing. Entities such as culture or milieu are both part and parcel of the supernarrative structure.',
       nodes: [
         { text: 'spatiality',       to: 'spatiality',    tunnel: '#3A86FF' },
