@@ -48,12 +48,12 @@ const ESSAY = {
      c: {
       page: 'section3.html', dark: true, type: 'passage', next: 'next',
       tunnel: '#fff',
-      text: 'But the egg is immanent. We never leave the egg. There is, effectively, no shell. The embryonic fluid is itself the shell, the barrier that never ends, the horizon that always recedes, the space-time starfield that always emanates away from us. The egg is the amniotic sac is the particle horizon. But some of the folds, in their activation and agency, attempt to harden what cannot be static, to freeze the story in permanent embryo. '
+      text: 'But the egg is immanent. We never leave the egg. There is, effectively, no shell. The embryonic fluid is itself the shell, the barrier that never ends, the horizon that always recedes, the space-time starfield that always emanates away from us. The egg is the amniotic sac is the particle horizon. But some of the folds, in their [[activation|next]] and agency, attempt to harden what cannot be static, to freeze the story in permanent embryo. '
     },
      d: {
       page: 'section3.html', dark: true, type: 'passage', next: 'next',
       tunnel: '#fff',
-      text: "Human interaction, perception, and interpretation is mediated and metabolized with the “outside” (the real, etc.) via what we will hereto call a “supernarrative.” The supernarrative, unlike Jung's collective unconsciousness, does not come about prior to the anthropocene.  It is simultaneously being produced by, activated via, and acting upon humans."
+      text: "Human interaction, perception, and interpretation is mediated and metabolized with the “outside” (the real, etc.) via what we will hereto call a “supernarrative.” The supernarrative, unlike Jung's collective unconsciousness, does not come about prior to the [[anthropocene|next]]. It is simultaneously being produced by, activated via, and acting upon humans."
     },
 
     nexus: {
