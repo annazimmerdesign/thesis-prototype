@@ -38,22 +38,22 @@ const ESSAY = {
     a: {
       page: 'section3.html', dark: true, type: 'passage', next: 'next',
       tunnel: '#fff',
-      text:  'The Egg. The World. The Self. A totality contained within itself, immanent. The egg has a clear story. An external-internal womb of potential and possibility, from which one might emerge into eventual flight. From that emerged entity we might expect another egg, or at least the impregnation into another egg creator.'
+      text:  'The Egg. The World. The Self. A totality contained within itself, immanent. The egg has a clear story.  It is also something that can only be understood intrinsically, as in, something that can only be understood from the inside. It is boundary-less but consists of folds that can create the illusions of totalities. The superstructure itself is not a totality and is not governing, though it is agentic and generative in nature.'
     },
      b: {
       page: 'section3.html', dark: true, type: 'passage', next: 'next',
       tunnel: '#fff',
-      text: 'The question of what the topology of the superstructure itself entails a relinquishment of firm boundaries but also of any totalities. That is not to say the illusion of totalities does not exist. The recording surface can take the form of any defining substrate. Capitalism, fascism, themselves are totalities in that they insist upon themselves and reiterate their own narrative prominence as to become immanently degenerative.'
+      text: "The question of what the topology of the superstructure itself entails a relinquishment of firm boundaries but also of any totalities. That is not to say the illusion of totalities does not exist. The recording surface can take the form of any defining substrate. Capitalism, fascism, themselves are totalities in that they insist upon themselves and reiterate their own narrative prominence as to become immanently degenerative. The supernarrative is something that can be comparable to Jung's idea of the collective unconscious, the historical idea of the canon, history as a project itself."
     },
      c: {
       page: 'section3.html', dark: true, type: 'passage', next: 'next',
       tunnel: '#fff',
-      text: 'But the egg is immanent. We never leave the egg. There is, effectively, no shell. The embryonic fluid is itself the shell, the barrier that never ends, the horizon that always recedes, the space-time starfield that always emanates away from us. The egg is the amniotic sac is the particle horizon.'
+      text: 'But the egg is immanent. We never leave the egg. There is, effectively, no shell. The embryonic fluid is itself the shell, the barrier that never ends, the horizon that always recedes, the space-time starfield that always emanates away from us. The egg is the amniotic sac is the particle horizon. But some of the folds, in their activation and agency, attempt to harden what cannot be static, to freeze the story in permanent embryo. '
     },
      d: {
       page: 'section3.html', dark: true, type: 'passage', next: 'next',
       tunnel: '#fff',
-      text: 'But how truly does the life inside an egg truly matter to us? What story does the particle horizon tell? Let’s focus on the amniotic fluid from which we emerged and let us analogize.'
+      text: "Human interaction, perception, and interpretation is mediated and metabolized with the “outside” (the real, etc.) via what we will hereto call a “supernarrative.” The supernarrative, unlike Jung's collective unconsciousness, does not come about prior to the anthropocene.  It is simultaneously being produced by, activated via, and acting upon humans."
     },
 
     nexus: {
@@ -91,7 +91,7 @@ const ESSAY = {
     next: {
         page: 'section4.html', dark: false, type: 'passage', next: 'nexus',
         tunnel: '#0645d6',
-        text: 'Let us take the Canon, the Story, the Narratove superstructure, and propose: a communally authored, essentially eerie, agentic and generative geometry simultaneously recording and acting upon humanity with real material consequences, even "outside of the text," i.e. our anthropocentric perception.'
+        text: 'Let us take the Canon, the Story, the Narrative superstructure, and propose an understanding of it as such: a communally authored, essentially eerie, agentic and generative geometry simultaneously recording and acting upon humanity with real material consequences, even "outside of the text," i.e. our anthropocentric perception.'
     }
   }
 };
