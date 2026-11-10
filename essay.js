@@ -56,12 +56,10 @@ const ESSAY = {
       text: 'But how truly does the life inside an egg truly matter to us? What story does the particle horizon tell? Let’s focus on the amniotic fluid from which we emerged and let us analogize.'
     },
 
-    // ---- the nexus: the opening paragraph taken apart into its mechanisms; the reader picks one from the mass ----
     nexus: {
       page: 'nexus.html', dark: true, type: 'nexus',
       tunnel: '#000',
       exit: { text: 'again', to: 'intro', tunnel: '#000' },
-      // PLACEHOLDER: replace with your own explanation of the initial paragraph and the mechanisms
       text: 'There are many mechanisms of the Supernarrative—spatiality, linguistics, faciality, temporal processing, encoding, subjectivity, and framing. Entities such as culture or milieu are both part and parcel of the supernarrative structure.',
       nodes: [
         { text: 'spatiality',       to: 'spatiality',    tunnel: '#3A86FF' },
@@ -74,7 +72,6 @@ const ESSAY = {
       ]
     },
 
-    // PLACEHOLDER mechanism sections; each returns to the nexus. Replace the text and give each its own page if you like.
     spatiality:   { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'How we organize ourselves, our language, our story. This is how we interface with the world. Connects to temporal processing in that together, as space-time, it is the main phenomenom our brains must negotiate. We might think of The Text as organized on spatial axis rather than purely linguistic or phonetic.' },
     linguistics:  { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
@@ -82,14 +79,14 @@ const ESSAY = {
     faciality:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'The black dot aginst the white wall (according to Deleuze and Guattari). Signifier and signified, symbol and sign. A tyranny that dictates our mode of interfacing. What lies beyond the face, the black on white symbol? This simplfies the story for us for relay.' },
     temporal:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
-      text: 'Cognitively, how do we handle time? For the most part, linearly. But the narrative as a device allows us to account for loops, returns, folds, dimensionality against the line. The supernarrative comes out of our collective aims to organize time socially, not all at once, but in arcs.' },
+      text: 'Cognitively, how do we handle time? For the most part, linearly. But the narrative as a device allows us to account for loops, returns, folds, dimensionality against the line. The supernarrative comes out of our collective aims to organize time socially, not all at once, but in arcs. The project of history is borne.' },
     encoding:     { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'What means what, how means how. Encryption, double meanings and double binds. We invest energy into certain things so they mean more than they are. The narrative is given weight and meaning-making is done.' },
     subjectivity: { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
       text: 'Object or subject? How do we recognize the individual, the self, agaisnt the colelctive, the eveyrthing? The supernarrative distinguishes us, seemingly, from bridge or tree, bird or granite. The difference between prop and character, subjective experience intersects, inserts, into itself.' },
 
     framing:      { page: 'section3.html', dark: true, type: 'passage', next: 'nexus', tunnel: '#000', 
-      text: 'Placeholder for framing.' },
+      text: "Context is everything. A structure isn't a structure wihtout a framing. We situate our symbols, build an altar and it accumalutlates through hsitory, time. And thus, the super narrative structure." },
 
     next: {
         page: 'section4.html', dark: false, type: 'passage', next: 'nexus',
