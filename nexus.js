@@ -1,9 +1,4 @@
-// The nexus section type: her text beside a living network, the mechanisms at its hubs.
-// Loaded by nexus.html before section.js, which hands over its pieces through `ctx`.
 window.SECTION_TYPES = window.SECTION_TYPES || {};
-// ---- the nexus: her text beside a living network; the mechanisms sit at its hubs, and the reader picks one ----
-// The network is generated, not drawn: nodes are scattered in an irregular patch, joined by curved veins, with tendrils
-// growing off the edge. Dots stream along the veins and pool at the nodes. Add ?seed=N to the url to grow a different one.
 SECTION_TYPES.nexus = function (ctx) {
   const { ID, sec, root, leave } = ctx;
   document.body.classList.add('nexus');
@@ -33,11 +28,9 @@ SECTION_TYPES.nexus = function (ctx) {
       if (!inside(x / R, y / R) || P.some(q => Math.hypot(q.x - x, q.y - y) < 0.24 * R)) continue;
       P.push({ x, y, ph: rnd() * 6.28, r: 0.025 + 0.02 * rnd(), hub: false });
     }
-    // hubs for the mechanisms: farthest-point picks, so they spread through the patch
     const nH = sec.nodes.length, hubs = [P[Math.floor(rnd() * P.length)]]; hubs[0].hub = true;
     while (hubs.length < nH) { let best = null, bd = -1; for (const q of P) { if (q.hub) continue; const d = Math.min(...hubs.map(h => Math.hypot(h.x - q.x, h.y - q.y))); if (d > bd) { bd = d; best = q; } } best.hub = true; hubs.push(best); }
     hubs.forEach(h => { h.r = 0.07 + 0.02 * rnd(); });
-    // veins: each node to its nearest two (sometimes three), then join any islands
     const E = [], key = new Set(), uf = P.map((_, i) => i), find = i => uf[i] === i ? i : (uf[i] = find(uf[i]));
     const link = (i, j, w) => { const k = Math.min(i, j) + '-' + Math.max(i, j); if (i === j || key.has(k)) return; key.add(k); uf[find(i)] = find(j);
       const a = P[i], b = P[j], len = Math.hypot(b.x - a.x, b.y - a.y);
@@ -49,7 +42,6 @@ SECTION_TYPES.nexus = function (ctx) {
       if (!best) break; link(best[1], best[2], 0.9);
     }
     E.forEach(e => { if (P[e.a].hub || P[e.b].hub) e.w *= 1.6; });
-    // tendrils: thin branches that wander off the edge of the patch and fade out
     const edgeNodes = P.slice().sort((u, v) => Math.hypot(v.x, v.y) - Math.hypot(u.x, u.y)).slice(0, 12);
     for (const n0 of edgeNodes) for (let t = 0; t < 1 + (rnd() < 0.5); t++) {
       let x = n0.x, y = n0.y, an = Math.atan2(y, x) + (rnd() - 0.5) * 1.2, prev = P.indexOf(n0);
@@ -60,7 +52,6 @@ SECTION_TYPES.nexus = function (ctx) {
         E.push({ a: prev, b: j, w: Math.max(0.18, 0.9 * (1 - k / segs)), len: step, bend: (rnd() - 0.5) * 0.5 * step, tendril: true }); prev = j;
       }
     }
-    // dots: streaming along the veins, pooled at the nodes
     const D = [];
     for (const e of E) {
       const n = Math.round(e.len * (0.28 + 0.55 * e.w)), an = Math.atan2(P[e.a].y + P[e.b].y, P[e.a].x + P[e.b].x);
@@ -89,14 +80,9 @@ SECTION_TYPES.nexus = function (ctx) {
   addEventListener('pointermove', e => { px.x = e.clientX; px.y = e.clientY; if (!fig.on) { fig.x = px.x; fig.y = px.y; fig.on = true; } });
 
 
-  // ---- the figure in the cursor's hole: a small, curled, fetal body made of the same dots ----
-  // Drawn once on a scratch canvas (head, neck, torso, folded arms, legs drawn up toward the belly), then sampled into
-  // points. It follows the cursor a beat late and keeps a slow heartbeat.
   const FIG_S = 0.1;                                                 // size on screen (1 = the 200px sprite)
   const HOLE = 46;                                                   // px: how far the cursor's hole parts the dots
   const fig = { x: -999, y: -999, vx: 0, vy: 0, a: 0, on: false, pts: [] };
-  // The figure is drawn once on a scratch canvas and sampled into dots. makeStage(u) can draw anywhere from u = 0 (a curled
-  // embryo: big head, eye, heart bulge, tail, limb buds) to u = 1 (a fetus: tail gone, limbs grown, a face); it is used at u = 1.
   function makeStage(u) {
     const c = document.createElement('canvas'); c.width = c.height = 200; const k = c.getContext('2d');
     k.fillStyle = k.strokeStyle = '#fff'; k.lineCap = k.lineJoin = 'round';
@@ -174,7 +160,6 @@ SECTION_TYPES.nexus = function (ctx) {
       const beat = REDUCED ? 0 : Math.pow(Math.max(0, Math.sin(T * 10.6)), 8), sc = FIG_S * (1 + 0.05 * beat) * (1 + 0.015 * Math.sin(T * 1.3));
       const tilt = Math.max(-0.5, Math.min(0.5, fig.vx * 0.03)) + 0.14 * Math.sin(T * 0.7), cs = Math.cos(tilt), sn = Math.sin(tilt);
       const bx = fig.x, by = fig.y + 1.5 * Math.sin(T * 1.1);
-      // the body
       const buckets = {};
       g.globalAlpha = fig.a * (0.9 + 0.1 * Math.sin(T * 6));
       for (const d of fig.pts) {

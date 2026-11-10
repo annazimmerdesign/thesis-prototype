@@ -1,11 +1,4 @@
-// A background loop that carries through the whole essay.
-//
-// Put the track at audio/loop.mp3 (or change TRACK). Every page loads this file with <script src="audio.js">.
-//   - Browsers will not play sound until the reader has done something (a click, a tap, a key), so on a first visit the
-//     track starts at the first gesture: on the egg page, the first tap.
-//   - Each page is a separate document, so the track would restart on every page. This file saves the playback position
-//     as the page closes and picks it up on the next one, and fades back in, so it reads as one continuous loop.
-//   - A small "sound" toggle sits at the bottom left. The choice is remembered.
+
 (function () {
   const TRACK = 'audio/eggin3d.mp3';
   const VOLUME = 0.5;        // 0 to 1
@@ -45,7 +38,7 @@
   a.addEventListener('error', () => { console.warn('audio.js: could not load ' + TRACK + ' (put the track there, or change TRACK)'); });
   a.addEventListener('loadedmetadata', () => {
     usable = true; paint();
-    if (saved && saved.on) begin(); else waitForGesture();           // the last page was already playing: try straight away
+    if (saved && saved.on) begin(); else waitForGesture();          
   });
 
   // the toggle

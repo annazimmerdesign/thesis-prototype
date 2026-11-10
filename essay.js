@@ -12,8 +12,7 @@
 //   nodes    nexus only: the words that drift in the swirling mass; each leads to a section ({ text, to, tunnel })
 //            (the nexus' own `text` is the passage beside the mass; it has no link word)
 //
-// Everything below is placeholder. Replace it with your own writing.
-// colour of the dot tunnel between pages
+
 const TUNNEL_COLOR = '#0645d6';
 
 const ESSAY = {

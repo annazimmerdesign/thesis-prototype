@@ -1,9 +1,4 @@
-// egg3d.js  (three.js)
-// A small black egg, turning in space. Each tap adds hairline cracks and folds the crown of the shell back on a ragged
-// hinge, so the shell opens like a flower and shows its inside (white, drawn with a black contour) on the outside.
-// When it is open, a click takes hold of a word at the lip. Move the mouse and the words come out as one thread: a
-// viscous, sticky chain dragged behind the cursor. When the last word is out, the thread lets go and the words slide into
-// the passage. The link word is the way on, through the dot tunnel.
+
 
 (() => {
 'use strict';
@@ -34,7 +29,7 @@ const DODGE_FORCE  = 1.4;
 const FONT_MAX     = 32;              // px; the text shrinks to fit, down to FONT_MIN
 const FONT_MIN     = 14;
 const FONT_FAMILY  = "'DT', sans-serif";
-// ----------------------------------
+
 
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cv = document.getElementById('stage'), wordsEl = document.getElementById('words');
@@ -42,7 +37,6 @@ const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
 const smooth = t => t * t * (3 - 2 * t);
 const rnd = (lo, hi) => lo + Math.random() * (hi - lo);
 
-// ---------- three ----------
 const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
 renderer.setClearColor(0xffffff, 0);
 const scene = new THREE.Scene();
@@ -50,7 +44,6 @@ const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
 const FOV_TAN = Math.tan(THREE.MathUtils.degToRad(15));
 const group = new THREE.Group(); scene.add(group);
 
-// the shell is a surface of revolution: s runs from the top of the egg (0) to the bottom (1), t is the angle round it
 const PH = Array.from({ length: 5 }, () => rnd(0, 6.2832));
 const jagJS = th => 0.45 * Math.sin(3 * th + PH[0]) + 0.30 * Math.sin(7 * th + PH[1]) + 0.20 * Math.sin(13 * th + PH[2])
                   + 0.12 * Math.sin(29 * th + PH[3]) + 0.07 * Math.sin(53 * th + PH[4]);
@@ -78,7 +71,6 @@ function buildGeometry(NS, NT) {
   return g;
 }
 
-// cracks are drawn into a texture (u = round the egg, v = top to bottom) that the shell samples
 const TW = 1536, TH = 1024;
 const tcv = document.createElement('canvas'); tcv.width = TW; tcv.height = TH;
 const tg = tcv.getContext('2d'); tg.fillStyle = '#000'; tg.fillRect(0, 0, TW, TH);
@@ -171,7 +163,6 @@ const mesh = new THREE.Mesh(buildGeometry(200, 256), material);
 group.add(mesh);
 const raycaster = new THREE.Raycaster();
 
-// ---------- state ----------
 const st = {
   phase: 'egg',                     // egg -> opening -> open -> settling -> done
   taps: 0, B: 0, Bv: 0, Bt: 0, wobX: 0, wobXv: 0, wobZ: 0, wobZv: 0, spin: 0.25, mx: 0.5,
@@ -181,7 +172,6 @@ const st = {
   attached: false, trail: [], head: null, px: -999, py: -999, pvx: 0, pvy: 0, leaving: false
 };
 
-// ---------- sizing ----------
 function build() {
   const W = innerWidth, H = innerHeight;
   st.W = W; st.H = H; st.eggPx = H * EGG_SIZE;
@@ -195,7 +185,6 @@ function build() {
   layoutText();
 }
 
-// ---------- cracks ----------
 function crackFrom(u, v, steps) {
   let x = u * TW, y = v * TH, ang = rnd(0, 6.283); const pts = [[x, y]];
   for (let i = 0; i < steps; i++) {
@@ -215,7 +204,7 @@ function addCracks(u, v, tapNo) {
   }
   st.dirty = true;
 }
-function addLipCrack(u, second) {               // a break line, running both ways round the egg from the tap
+function addLipCrack(u, second) {               
   for (const dir of [1, -1]) {
     const pts = [];
     for (let a = 0; a <= Math.PI + 0.001; a += 0.02) {
@@ -243,8 +232,7 @@ function paintCracks(now) {
   crackTex.needsUpdate = true; st.dirty = growing;
 }
 
-// ---------- tapping the egg ----------
-function pick(x, y) {                           // where on the shell (u round, v down) a screen point lands
+function pick(x, y) {                          
   group.updateMatrixWorld(true);
   raycaster.setFromCamera({ x: x / st.W * 2 - 1, y: -(y / st.H) * 2 + 1 }, camera);
   const hit = raycaster.intersectObject(mesh)[0]; if (!hit) return null;
@@ -264,7 +252,6 @@ function tap(x, y) {
   if (st.taps >= CRACK_TAPS) st.phase = 'opening';
 }
 
-// ---------- text layout ----------
 const mg = document.createElement('canvas').getContext('2d');
 function parseTokens() {
   const sec = ESSAY.sections.intro;
@@ -292,9 +279,6 @@ function layoutText() {
   st.nodes.forEach(n => { const s = slots[n.i]; n.w = s.w; n.h = s.h; n.el.style.fontSize = st.fs + 'px'; n.el.style.lineHeight = s.h + 'px'; });
 }
 
-// ---------- the thread ----------
-// The first word is held by the cursor and trails it with a lag. The path it travels is the thread: every other word sits
-// a fixed distance back along that path, and a word leaves the egg when the path has grown long enough to reach it.
 const gap = () => st.fs * 0.5;
 const scaleAt = d => START_SCALE + (1 - START_SCALE) * smooth(clamp(d / GROW_DIST, 0, 1));
 function spawn(now) {
@@ -308,7 +292,7 @@ function spawn(now) {
                   mode: 'rope', delay: 0, ox: 0, oy: 0, ovx: 0, ovy: 0, live: false });
   st.k++;
 }
-function pointAt(a) {                            // the point a px along the thread's path from the lip
+function pointAt(a) {                           
   const T = st.trail; if (a <= 0 || T.length < 2) return T[0];
   let lo = 0, hi = T.length - 1;
   while (hi - lo > 1) { const m = (lo + hi) >> 1; if (T[m].len < a) lo = m; else hi = m; }
@@ -350,7 +334,6 @@ function updateThread(dt, now) {
     }
   }
 
-  // angles, settling, and the settled passage
   const sp = Math.hypot(st.pvx, st.pvy), pvn = clamp(sp / 14, 0, 1);
   for (let idx = 0; idx < N.length; idx++) {
     const q = N[idx], slot = st.slots[q.i], tx = slot.x + slot.w / 2, ty = slot.y + slot.h / 2;
@@ -367,7 +350,6 @@ function updateThread(dt, now) {
       }
     }
     if (q.mode === 'glide') {
-      // heavy and slow: x leads, y follows a little behind (the words sink), and each word droops and sways on the way
       const G = q.g, p = clamp((now - G.t0) / G.dur, 0, 1), ex = smooth(Math.pow(p, 0.85)), ey = smooth(Math.pow(p, 1.35)), e = smooth(p);
       const calm = 1 - p;
       q.x = G.x + (tx - G.x) * ex + Math.sin(p * 6.28 + G.ph) * 6 * calm * Math.sin(p * 3.14);
@@ -394,7 +376,6 @@ function updateThread(dt, now) {
   if (st.phase === 'settling' && N.length === n && N.every(q => q.mode === 'set')) st.phase = 'done';
 }
 
-// ---------- input ----------
 addEventListener('pointerdown', e => {
   if (e.target.closest && e.target.closest('a.link')) return;
   st.px = e.clientX; st.py = e.clientY;
@@ -413,9 +394,6 @@ addEventListener('keydown', e => {
   if (st.phase === 'egg') tap(st.W / 2 + rnd(-0.2, 0.2) * st.eggPx, st.H * EGG_Y + rnd(-0.2, 0.2) * st.eggPx);
   else if (st.phase === 'open') st.attached = !st.attached;
 });
-// ---------- the door ----------
-// The link word is drawn again in 3D: a corridor of copies of itself, each one folded back on itself, twisting and
-// rushing past the viewer while the rest of the page falls away. The blue floods in at the end and the next page opens in it.
 const DOOR_MS = 2800, DOOR_N = 26, DOOR_DZ = 1.1;
 const doorVS = `
   uniform float uFold, uTime, uIdx, uHW; varying vec2 vUv;
@@ -496,13 +474,12 @@ wordsEl.addEventListener('click', e => {
   doorStart(el, x, y);
 });
 
-// ---------- loop ----------
+
 let last = performance.now();
 function frame(now) {
   const dt = clamp((now - last) / 16.667, 0.2, 2.5); last = now;
   st.pvx *= Math.pow(0.8, dt); st.pvy *= Math.pow(0.8, dt);
 
-  // the shell opens as you tap: a spring, so each tap overshoots a little
   st.Bv += (st.Bt - st.B) * 0.04 * dt; st.Bv *= Math.pow(0.84, dt); st.B += st.Bv * dt;
   const B = Math.max(0, st.B);
   const U = material.uniforms;
